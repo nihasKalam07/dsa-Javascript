@@ -1,7 +1,15 @@
-function factorial(num) {
-  if (num < 1) {
-    return 0;
+function bubbleSort(array) {
+  for (let i = array.length - 1; i >= 0; i--) {
+    for (let j = 0; j <= i - 1; j++) {
+      if (array[j] > array[j + 1]) {
+        let temp = array[j];
+        array[j] = array[j + 1];
+        array[j + 1] = temp;
+      }
+    }
   }
-
-  return num * factorial(num - 1);
+  return array;
 }
+
+let sortedArray = bubbleSort([20, 2, 4, 10, 1, 5, 3]);
+console.log(sortedArray);
