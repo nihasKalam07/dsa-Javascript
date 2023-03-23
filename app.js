@@ -1,15 +1,33 @@
-function bubbleSort(array) {
-  for (let i = array.length - 1; i >= 0; i--) {
-    for (let j = 0; j <= i - 1; j++) {
-      if (array[j] > array[j + 1]) {
-        let temp = array[j];
-        array[j] = array[j + 1];
-        array[j + 1] = temp;
-      }
+function pivot(arr, start = 0, end = arr.length - 1) {
+  function swap(arr, i, j) {
+    let temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+  }
+  let pivot = start;
+
+  let swapIdx = start;
+  for (let i = start + 1; i <= end; i++) {
+    if (arr[i] < arr[pivot]) {
+      swapIdx++;
+      swap(arr, swapIdx, i);
     }
   }
-  return array;
+
+  swap(arr, pivot, swapIdx);
+  return swapIdx;
 }
 
-let sortedArray = bubbleSort([20, 2, 4, 10, 1, 5, 3]);
-console.log(sortedArray);
+function quickSort(arr, left = 0, right = arr.length - 1) {
+  if (left < right) {
+    let pivotIndex = pivot(arr, left, right); //3
+    //left
+    quickSort(arr, left, pivotIndex - 1);
+    //right
+    quickSort(arr, pivotIndex + 1, right);
+  }
+  return arr;
+}
+
+let arr = quickSort([4, 8, 2, 1, 5, 7, 6, 3]);
+console.log(arr);
