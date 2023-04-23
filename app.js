@@ -1,172 +1,52 @@
-class WeightedGraph {
-  constructor() {
-    this.adjacencyList = {};
-  }
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var twoSum = function (nums, target) {
+  let temp = nums.slice();
+  let sorted = nums.sort((num1, num2) => {
+    return num1 - num2;
+  });
 
-  addVertex(vertex) {
-    if (!this.adjacencyList[vertex]) this.adjacencyList[vertex] = [];
-  }
+  let firstIndex = 0;
+  let lastIndex = sorted.length - 1;
 
-  addEdge(v1, v2, weight) {
-    this.adjacencyList[v1].push({ node: v2, weight });
-    this.adjacencyList[v2].push({ node: v1, weight });
-    //{ node: v2, weight } this is similar to { node: v2, weight: weight }
-  }
-
-  findShortestPath(start, finish) {
-    //create distance object
-    //create pq
-    // create previous object
-    let distanceObj = {};
-    let pq = new PriorityQueue();
-    let previousObj = {};
-    for (const v in this.adjacencyList) {
-      if (v === start) {
-        distanceObj[v] = 0;
-        pq.enqueue(v, 0);
-      } else {
-        distanceObj[v] = Infinity;
-        pq.enqueue(v, Infinity);
-      }
-      previousObj[v] = null;
-    }
-
-    //loop thorgh the pq
-    // get the children. check its distance from starting vertex.
-    // if the distance < current distance, then update the previous
-    //  and distance value and enqueue the pq
-
-    let smallest;
-    while (pq.values.length > 0) {
-      smallest = pq.dequeue().val;
-      if (smallest === finish) break;
-      let neighbours = this.adjacencyList[smallest];
-      for (const neighbour of neighbours) {
-        // calculating distance from the neighboring node to the start.
-        const newDistanceFromStart = distanceObj[smallest] + neighbour.weight;
-        let neighbourNode = neighbour.node;
-        if (newDistanceFromStart < distanceObj[neighbourNode]) {
-          previousObj[neighbourNode] = smallest;
-          distanceObj[neighbourNode] = newDistanceFromStart;
-          pq.enqueue(neighbourNode, newDistanceFromStart);
-        }
-      }
-    }
-
-    // Get the shortest path from the previousObj
-    let shortestPath = [];
-    let currentNode = finish;
-    while (currentNode) {
-      shortestPath.push(currentNode);
-      currentNode = previousObj[currentNode];
-    }
-
-    console.log("distances", distanceObj);
-    return shortestPath.reverse();
-  }
-}
-
-// SimplePriorityQueue uses sort method. So time complexity is O(N*log N)
-class SimplePriorityQueue {
-  constructor() {
-    this.values = [];
-  }
-  enqueue(val, priority) {
-    this.values.push({ val, priority });
-    this.sort();
-  }
-  dequeue() {
-    return this.values.shift();
-  }
-  sort() {
-    this.values.sort((a, b) => a.priority - b.priority);
-  }
-}
-
-// PriorityQueue based on Binary heap. Time complexity is O(log N)
-class PriorityQueue {
-  constructor() {
-    this.values = [];
-  }
-  enqueue(val, priority) {
-    let newNode = new Node(val, priority);
-    this.values.push(newNode);
-    this.bubbleUp();
-  }
-  bubbleUp() {
-    let idx = this.values.length - 1;
-    const element = this.values[idx];
-    while (idx > 0) {
-      let parentIdx = Math.floor((idx - 1) / 2);
-      let parent = this.values[parentIdx];
-      if (element.priority >= parent.priority) break;
-      this.values[parentIdx] = element;
-      this.values[idx] = parent;
-      idx = parentIdx;
+  while (firstIndex < lastIndex) {
+    let sum = sorted[firstIndex] + sorted[lastIndex];
+    if (sum > target) {
+      lastIndex--;
+    } else if (sum < target) {
+      firstIndex++;
+    } else if (sum === target) {
+      break;
     }
   }
-  dequeue() {
-    const min = this.values[0];
-    const end = this.values.pop();
-    if (this.values.length > 0) {
-      this.values[0] = end;
-      this.sinkDown();
-    }
-    return min;
+
+  let num1 = sorted[firstIndex];
+  let num2 = sorted[lastIndex];
+
+  console.log("unsorted", temp);
+
+  console.log("---------------------");
+  console.log("sorted", sorted);
+  console.log("indices", firstIndex, lastIndex);
+  console.log("numbers", num1, num2);
+  let result = [];
+  let idx1 = temp.indexOf(num1);
+  let idx2;
+  if (num1 === num2) {
+    idx2 = temp.indexOf(num2, idx1 + 1);
+  } else {
+    idx2 = temp.indexOf(num2);
   }
-  sinkDown() {
-    let idx = 0;
-    const length = this.values.length;
-    const element = this.values[0];
-    while (true) {
-      let leftChildIdx = 2 * idx + 1;
-      let rightChildIdx = 2 * idx + 2;
-      let leftChild, rightChild;
-      let swap = null;
 
-      if (leftChildIdx < length) {
-        leftChild = this.values[leftChildIdx];
-        if (leftChild.priority < element.priority) {
-          swap = leftChildIdx;
-        }
-      }
-      if (rightChildIdx < length) {
-        rightChild = this.values[rightChildIdx];
-        if (
-          (swap === null && rightChild.priority < element.priority) ||
-          (swap !== null && rightChild.priority < leftChild.priority)
-        ) {
-          swap = rightChildIdx;
-        }
-      }
-      if (swap === null) break;
-      this.values[idx] = this.values[swap];
-      this.values[swap] = element;
-      idx = swap;
-    }
-  }
-}
+  console.log("unsroeted indices", idx1, idx2);
+  return [idx1, idx2];
+};
 
-class Node {
-  constructor(val, priority) {
-    this.val = val;
-    this.priority = priority;
-  }
-}
+let nums = [2, 7, 11, 15];
+twoSum(nums, 9);
 
-let g = new WeightedGraph();
-g.addVertex("A");
-g.addVertex("B");
-g.addVertex("C");
-g.addVertex("D");
-g.addVertex("E");
-g.addVertex("F");
-
-g.addEdge("A", "B", 4);
-g.addEdge("A", "C", 2);
-g.addEdge("B", "E", 3);
-g.addEdge("C", "D", 2);
-g.addEdge("C", "F", 4);
-g.addEdge("D", "E", 3);
-g.addEdge("D", "F", 1);
-g.addEdge("E", "F", 1);
+let nums1 = [3, 2, 4];
+twoSum(nums1, 6);
